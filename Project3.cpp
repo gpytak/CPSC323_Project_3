@@ -287,7 +287,7 @@ bool productionQ(int& tokenIndex)
 			}
 		}
 	}
-	if (s[tokenIndex] == ")" || s[tokenIndex] == ";")
+	if (s[tokenIndex] == ")" || s[tokenIndex] == ";" || s[tokenIndex] == "$")
 	{
 		currentRule = ("\n\t<Expression Prime> -> <Epsilon>");
 		ruleList[tokenIndex] += currentRule;
@@ -325,7 +325,7 @@ bool productionT(int& tokenIndex)
 bool productionR(int& tokenIndex)
 {
 	bool R = false;
-	if (s[tokenIndex] == ")" || s[tokenIndex] == "+" || s[tokenIndex] == "-" || s[tokenIndex] == ";")
+	if (s[tokenIndex] == ")" || s[tokenIndex] == "+" || s[tokenIndex] == "-" || s[tokenIndex] == ";" || s[tokenIndex] == "$")
 	{
 		currentRule = ("\n\t<Term Prime> -> <Epsilon>");
 		ruleList[tokenIndex] += currentRule;
