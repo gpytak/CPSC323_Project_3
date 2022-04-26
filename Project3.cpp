@@ -1,10 +1,9 @@
 // ============================================================================
 // Programmer: Vincent Hsu, Gregory Pytak, Ethan Ton
-// Date: 04/17/2022
+// Date: 05/13/2022
 // Class: CPSC 323
-// Project: Project 2
+// Project: Project 3
 // ============================================================================
-#include "pch.h"
 #include <iostream>
 #include <vector>
 #include <string>
@@ -145,6 +144,7 @@ int main()
 			oFile << ruleList[i] << endl;
 			if (tokenLength == i + 1)
 			{
+				oFile << "Token: END \tLexeme: $";
 				while (!ruleList[i].empty())
 				{
 					// Print unused production rules
@@ -182,11 +182,11 @@ void productionParser(vector<Tokens> &tokens)
 	{
 		s[i] = tokens[i].lexemeValue;
 
-		//if (i == tokenLength)
-		//{
-		//	i++;
-		//	s[i] = "$";
-		//}
+		if (i == tokenLength)
+		{
+			i++;
+			s[i] = "$";
+		}
 	}
 	
 	if (productionS(tokenIndex) != true)
