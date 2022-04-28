@@ -1,1 +1,1 @@
-result = (a - b) * (c + d) / f;
+x = ((a + a - a + a - b) * (c / d * d + d));
