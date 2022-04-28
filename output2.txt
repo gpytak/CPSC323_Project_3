@@ -1,4 +1,4 @@
-Token: IDENTIFIER 	Lexeme: result
+Token: IDENTIFIER 	Lexeme: x
 	<Statement> -> <Assign>
 Token: OPERATOR 	Lexeme: =
 	<Assign> -> <Identifier> = <Expression>
@@ -6,8 +6,30 @@ Token: SEPARATOR 	Lexeme: (
 	<Expression> -> <Term> <Expression Prime>
 	<Term> -> <Factor> <Term Prime>
 	<Factor> -> ( <Expression> )
+Token: SEPARATOR 	Lexeme: (
+	<Expression> -> <Term> <Expression Prime>
+	<Term> -> <Factor> <Term Prime>
+	<Factor> -> ( <Expression> )
 Token: IDENTIFIER 	Lexeme: a
 	<Expression> -> <Term> <Expression Prime>
+	<Term> -> <Factor> <Term Prime>
+	<Factor> -> <Identifier>
+Token: OPERATOR 	Lexeme: +
+	<Term Prime> -> <Epsilon>
+	<Expression Prime> -> + <Term> <Expression Prime>
+Token: IDENTIFIER 	Lexeme: a
+	<Term> -> <Factor> <Term Prime>
+	<Factor> -> <Identifier>
+Token: OPERATOR 	Lexeme: -
+	<Term Prime> -> <Epsilon>
+	<Expression Prime> -> - <Term> <Expression Prime>
+Token: IDENTIFIER 	Lexeme: a
+	<Term> -> <Factor> <Term Prime>
+	<Factor> -> <Identifier>
+Token: OPERATOR 	Lexeme: +
+	<Term Prime> -> <Epsilon>
+	<Expression Prime> -> + <Term> <Expression Prime>
+Token: IDENTIFIER 	Lexeme: a
 	<Term> -> <Factor> <Term Prime>
 	<Factor> -> <Identifier>
 Token: OPERATOR 	Lexeme: -
@@ -27,6 +49,14 @@ Token: IDENTIFIER 	Lexeme: c
 	<Expression> -> <Term> <Expression Prime>
 	<Term> -> <Factor> <Term Prime>
 	<Factor> -> <Identifier>
+Token: OPERATOR 	Lexeme: /
+	<Term Prime> -> / <Factor> <Term Prime>
+Token: IDENTIFIER 	Lexeme: d
+	<Factor> -> <Identifier>
+Token: OPERATOR 	Lexeme: *
+	<Term Prime> -> * <Factor> <Term Prime>
+Token: IDENTIFIER 	Lexeme: d
+	<Factor> -> <Identifier>
 Token: OPERATOR 	Lexeme: +
 	<Term Prime> -> <Epsilon>
 	<Expression Prime> -> + <Term> <Expression Prime>
@@ -36,12 +66,11 @@ Token: IDENTIFIER 	Lexeme: d
 Token: SEPARATOR 	Lexeme: )
 	<Term Prime> -> <Epsilon>
 	<Expression Prime> -> <Epsilon>
-Token: OPERATOR 	Lexeme: /
-	<Term Prime> -> / <Factor> <Term Prime>
-Token: IDENTIFIER 	Lexeme: f
-	<Factor> -> <Identifier>
+Token: SEPARATOR 	Lexeme: )
+	<Term Prime> -> <Epsilon>
+	<Expression Prime> -> <Epsilon>
 Token: SEPARATOR 	Lexeme: ;
 	<Term Prime> -> <Epsilon>
 	<Expression Prime> -> <Epsilon>
-
+Token: END 	Lexeme: $
 String accepted.
