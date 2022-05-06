@@ -76,6 +76,27 @@ int table[9][9] =
 /* STATE 7 */ {COMMENT,  COMMENT     ,   COMMENT    ,   COMMENT    ,   COMMENT    ,  COMMENT    ,   COMMENT    ,  REJECT ,  COMMENT  },
 /* STATE 8 */ {UNKNOWN,   UNKNOWN    ,   UNKNOWN    ,   UNKNOWN    ,   UNKNOWN    ,  UNKNOWN    ,   UNKNOWN    ,  UNKNOWN,  UNKNOWN  } };
 
+/*ParseTable*/
+//S->A
+//A->id=E
+//E->TQ
+//Q->+TQ|-TQ|epsilon
+//T->FR
+//R->*FR|/FR|epsilon
+//F->id|(E)
+const int parseTableRowCount 7;
+const int parseTableColumnCount = 11;
+string parseTable[parseTableRowCount][parseTableColumnCount] = {
+	{"0", "$"	, "id"	, "="	, "+"	, "-"	, "*"	, "/"	, "("	, ")"	, ";"}
+	{"A", "0"	, "id=E", "id=E", "0"	, "0"	, "0"	, "0"	, "E"	, "0"	, "0"}
+	{"E", "0"	, "TQ"	, "0"	, "0"	, "0"	, "0"	, "0"	, "TQ"	, "0"	, "0"}
+	{"Q", "eps"	, "0"	, "0"	, "+TQ"	, "-TQ"	, "0"	, "0"	, "0"	, "eps"	, "0"}
+	{"T", "0"	, "FR"	, "0"	, "0"	, "0"	, "0"	, "0"	, "FR"	, "0"	, "0"}
+	{"R", "eps"	, "0"	, "0"	, "0"	, "0"	, "*FR"	, "/FR"	, "0"	, "eps"	, "0"}
+	{"F", "0"	, "id"	, "0"	, "0"	, "0"	, "0"	, "0"	, "(E)"	, "0"	, "0"}
+}
+
+
 // ============================================================================
 //  MAIN
 // ============================================================================
@@ -130,6 +151,71 @@ int main()
 	// Output to file
 	while (getline(inFile, fileInput))
 	{
+		
+		//Table Parse: add "$" to end of input string
+		fileInputTP = fileInput + "$";
+		int inputCount = 0;
+		//bool entryFound = false;
+		//Table Parse
+		stack<string> parseStack;
+		parseStack.push("$");
+		parseStack.push("S");
+
+		while (!parseStack.empty() || parseStack.top != "$")
+		{
+			string t = parseStack.top();
+			string input = fileInputTP[inputCount];
+
+			//top of stack is terminal
+			/* t >= "a" && t <= "z" is t == "id"*/
+			if (t == "$" || t == "id" || t == "=" || t == "+" || t == "-" || t == "*" || t == "/" || t == "(" || t == ")" || t == ";")
+			{
+				//terminal matches input
+				if (t == input)
+				{
+					parseStack.pop();
+					tokens.pushback(lexer(input));
+					inputCount++;
+				}
+				else
+				{
+					cout << "Error, terminal not found" << endl;
+				}
+			}
+			//top of stack is non-terminal
+			else
+			{
+				//non-terminal (row) match
+				for int r = 0; r < parseTableRowCount; r++
+				{
+					if (parseTable[r][0] == t)
+					{
+						//input terminal (column) match
+						for int c = 0; c < parseTableColumnCount; c++
+						{
+							if (parseTable[0][c] == input)
+							{
+								//check if valid table entry
+								if (parseTable[r][c] != 0)
+								{
+									parseStack.pop();
+									tableEntry = parseTable[r][c];
+									for int k = tableEntry.length(); k > 0; k--
+									{
+										parseStack.push(tableEntry[k]);
+									}
+								}
+								else
+								{
+									cout << "Error, table spot is 0" << endl;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
 		// Lexical Analyzer
 		tokens = lexer(fileInput);
 
