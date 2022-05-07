@@ -175,6 +175,11 @@ int main()
 				{
 					parseStack.pop();
 					tokens.pushback(lexer(input));
+					
+					//print
+					oFile << "Token: " << tokens[inputCount].tokenName << " \t" << "Lexeme: " << tokens[inputCount].lexemeValue;
+					oFile << ruleOutputForTable(tokens[inputCount].lexemeValue) << endl; //unknown, needs defining
+					
 					inputCount++;
 				}
 				else
