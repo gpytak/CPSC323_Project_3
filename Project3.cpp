@@ -9,6 +9,7 @@
 #include <string>
 #include <iomanip>
 #include <fstream>
+#include <stack>
 
 using namespace std;
 
@@ -17,6 +18,7 @@ bool error = false;
 int errorIndex;
 int tokenIndex = 0;
 bool isComment = false;
+vector<string> fileInputTP;
 string s[30];
 string currentRule;
 string ruleList[30];
@@ -84,7 +86,7 @@ int table[9][9] =
 //T->FR
 //R->*FR|/FR|epsilon
 //F->id|(E)
-const int parseTableRowCount 7;
+const int parseTableRowCount = 7;
 const int parseTableColumnCount = 11;
 string parseTable[parseTableRowCount][parseTableColumnCount] = {
 	{"0", "$"	, "id"	, "="	, "+"	, "-"	, "*"	, "/"	, "("	, ")"	, ";"}
@@ -94,7 +96,7 @@ string parseTable[parseTableRowCount][parseTableColumnCount] = {
 	{"T", "0"	, "FR"	, "0"	, "0"	, "0"	, "0"	, "0"	, "FR"	, "0"	, "0"}
 	{"R", "eps"	, "0"	, "0"	, "0"	, "0"	, "*FR"	, "/FR"	, "0"	, "eps"	, "0"}
 	{"F", "0"	, "id"	, "0"	, "0"	, "0"	, "0"	, "0"	, "(E)"	, "0"	, "0"}
-}
+};
 
 
 // ============================================================================
@@ -151,9 +153,8 @@ int main()
 	// Output to file
 	while (getline(inFile, fileInput))
 	{
-		
 		//Table Parse: add "$" to end of input string
-		fileInputTP = fileInput + "$";
+		fileInputTP.push_back(fileInput + "$");
 		int inputCount = 0;
 		//bool entryFound = false;
 		//Table Parse
@@ -161,7 +162,7 @@ int main()
 		parseStack.push("$");
 		parseStack.push("S");
 
-		while (!parseStack.empty() || parseStack.top != "$")
+		while (!parseStack.empty() || parseStack.top() != "$")
 		{
 			string t = parseStack.top();
 			string input = fileInputTP[inputCount];
@@ -174,12 +175,12 @@ int main()
 				if (t == input)
 				{
 					parseStack.pop();
-					tokens.pushback(lexer(input));
-					
+					tokens = lexer(input);
+
 					//print
 					oFile << "Token: " << tokens[inputCount].tokenName << " \t" << "Lexeme: " << tokens[inputCount].lexemeValue;
 					oFile << ruleOutputForTable(tokens[inputCount].lexemeValue) << endl; //unknown, needs defining
-					
+
 					inputCount++;
 				}
 				else
@@ -191,17 +192,17 @@ int main()
 			else
 			{
 				//non-terminal (row) match
-				for int r = 0; r < parseTableRowCount; r++
+				for (int r = 0; r < parseTableRowCount; r++)
 				{
 					if (parseTable[r][0] == t)
 					{
 						//input terminal (column) match
-						for int c = 0; c < parseTableColumnCount; c++
+						for (int c = 0; c < parseTableColumnCount; c++)
 						{
 							if (parseTable[0][c] == input)
 							{
 								//check if valid table entry
-								if (parseTable[r][c] != 0)
+								if (parseTable[r][c] != "0")
 								{
 									parseStack.pop();
 									tableEntry = parseTable[r][c];
@@ -220,7 +221,7 @@ int main()
 				}
 			}
 		}
-		
+
 		// Lexical Analyzer
 		tokens = lexer(fileInput);
 
@@ -279,7 +280,7 @@ void productionParser(vector<Tokens> &tokens)
 			s[i] = "$";
 		}
 	}
-	
+
 	if (productionS(tokenIndex) != true)
 	{
 		error = true;
@@ -309,7 +310,7 @@ bool productionS(int& tokenIndex)
 bool productionA(int& tokenIndex)
 {
 	bool A = false;
-	if(s[tokenIndex] >= "a" || s[tokenIndex] <= "z")
+	if (s[tokenIndex] >= "a" || s[tokenIndex] <= "z")
 	{
 		tokenIndex++;
 		if (s[tokenIndex] == "=")
