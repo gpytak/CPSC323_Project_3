@@ -89,12 +89,12 @@ int table[9][9] =
 const int parseTableRowCount = 7;
 const int parseTableColumnCount = 11;
 string parseTable[parseTableRowCount][parseTableColumnCount] = {
-	{"0", "$"	, "id"	, "="	, "+"	, "-"	, "*"	, "/"	, "("	, ")"	, ";"}
-	{"A", "0"	, "id=E", "id=E", "0"	, "0"	, "0"	, "0"	, "E"	, "0"	, "0"}
-	{"E", "0"	, "TQ"	, "0"	, "0"	, "0"	, "0"	, "0"	, "TQ"	, "0"	, "0"}
-	{"Q", "eps"	, "0"	, "0"	, "+TQ"	, "-TQ"	, "0"	, "0"	, "0"	, "eps"	, "0"}
-	{"T", "0"	, "FR"	, "0"	, "0"	, "0"	, "0"	, "0"	, "FR"	, "0"	, "0"}
-	{"R", "eps"	, "0"	, "0"	, "0"	, "0"	, "*FR"	, "/FR"	, "0"	, "eps"	, "0"}
+	{"0", "$"	, "id"	, "="	, "+"	, "-"	, "*"	, "/"	, "("	, ")"	, ";"},
+	{"A", "0"	, "id=E", "id=E", "0"	, "0"	, "0"	, "0"	, "E"	, "0"	, "0"},
+	{"E", "0"	, "TQ"	, "0"	, "0"	, "0"	, "0"	, "0"	, "TQ"	, "0"	, "0"},
+	{"Q", "eps"	, "0"	, "0"	, "+TQ"	, "-TQ"	, "0"	, "0"	, "0"	, "eps"	, "0"},
+	{"T", "0"	, "FR"	, "0"	, "0"	, "0"	, "0"	, "0"	, "FR"	, "0"	, "0"},
+	{"R", "eps"	, "0"	, "0"	, "0"	, "0"	, "*FR"	, "/FR"	, "0"	, "eps"	, "0"},
 	{"F", "0"	, "id"	, "0"	, "0"	, "0"	, "0"	, "0"	, "(E)"	, "0"	, "0"}
 };
 
@@ -206,7 +206,7 @@ int main()
 								{
 									parseStack.pop();
 									tableEntry = parseTable[r][c];
-									for int k = tableEntry.length(); k > 0; k--
+									for (int k = tableEntry.length(); k > 0; k--)
 									{
 										parseStack.push(tableEntry[k]);
 									}
