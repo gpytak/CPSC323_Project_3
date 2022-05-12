@@ -19,6 +19,7 @@ int errorIndex;
 int tokenIndex = 0;
 bool isComment = false;
 vector<string> fileInputTP;
+vector<string> tableEntry;
 string s[30];
 string currentRule;
 string ruleList[30];
@@ -95,7 +96,7 @@ string parseTable[parseTableRowCount][parseTableColumnCount] = {
 	{"Q", "eps"	, "0"	, "0"	, "+TQ"	, "-TQ"	, "0"	, "0"	, "0"	, "eps"	, "0"},
 	{"T", "0"	, "FR"	, "0"	, "0"	, "0"	, "0"	, "0"	, "FR"	, "0"	, "0"},
 	{"R", "eps"	, "0"	, "0"	, "0"	, "0"	, "*FR"	, "/FR"	, "0"	, "eps"	, "0"},
-	{"F", "0"	, "id"	, "0"	, "0"	, "0"	, "0"	, "0"	, "(E)"	, "0"	, "0"}
+	{"F", "0"	, "id"	, "0"	, "0"	, "0"	, "0"	, "0"	, "(E)"	, "0"	, "0"},
 };
 
 
@@ -205,10 +206,13 @@ int main()
 								if (parseTable[r][c] != "0")
 								{
 									parseStack.pop();
-									tableEntry = parseTable[r][c];
-									for (int k = tableEntry.length(); k > 0; k--)
+									tableEntry.push_back(parseTable[r][c]);
+									for (int k = tableEntry.size(); k > 0; k--)
 									{
-										parseStack.push(tableEntry[k]);
+										if (!tableEntry[k].empty())
+										{
+											parseStack.push(tableEntry[k]);
+										}
 									}
 								}
 								else
