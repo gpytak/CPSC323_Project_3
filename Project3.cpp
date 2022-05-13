@@ -15,8 +15,9 @@ using namespace std;
 
 bool isComment = false;
 bool PUSH = false;
+bool stringAccepted = true;
 int inputCount = 0;
-string input, top, printRules[60];
+string input, top, printRules[60], currInput = "";;
 ofstream oFile;
 
 enum TransitionStates {
@@ -48,6 +49,7 @@ struct Tokens
 vector<Tokens> lexer(string fileInput);
 int getCol(char character);
 string tokenName(string token, int lexeme);
+void printProd(string top);
 
 // ============================================================================
 //  Integer Table
@@ -76,20 +78,19 @@ int table[9][9] =
 const int parseTableRowCount = 7;
 const int parseTableColumnCount = 11;
 string parseTable[parseTableRowCount][parseTableColumnCount] = {
-	{"0", "$"	, "id"	 , "="	  , "+"		, "-"	, "*"		, "/"		, "("	, ")"	, ";"},
-	{"A", "0"	, "id=E;", "id=E;", "0"		, "0"	, "0"		, "0"		, "E"	, "0"	, "0"},
-	{"E", "0"	, "T Q"	 , "0"	  , "0"		, "0"	, "0"		, "0"		, "T Q"	, "0"	, "0"},
-	{"Q", "eps"	, "0"	 , "0"	  , "+T Q"	, "-T Q", "0"		, "0"		, "0"	, "eps"	, "id=E;"},
-	{"T", "0"	, "F R"	 , "0"	  , "0"		, "0"	, "0"		, "0"		, "F R"	, "0"	, "0;"},
-	{"R", "eps"	, "0"	 , "0"	  , "0"		, "0"	, "*F R"	, "/F R"	, "0"	, "eps"	, "id=E;"},
-	{"F", "0"	, "id"	 , "0"	  , "0"		, "0"	, "0"		, "0"		, "(E)"	, "0"	, "0;"},
+	{"0", "$"	, "id"	, "="	, "+"	, "-"	, "*"	, "/"	, "("	, ")"	, ";"},
+	{"A", "0"	, "id=E;", "0"	, "0"	, "0"	, "0"	, "0"	, "0"	, "0"	, "0"},
+	{"E", "0"	, "T Q"	, "0"	, "0"	, "0"	, "0"	, "0"	, "T Q"	, "0"	, "0"},
+	{"Q", "eps"	, "0"	, "0"	, "+T Q", "-T Q", "0"	, "0"	, "0"	, "eps"	, "eps"},
+	{"T", "0"	, "F R"	, "0"	, "0"	, "0"	, "0"	, "0"	, "F R"	, "0"	, "0"},
+	{"R", "eps"	, "0"	, "0"	, "eps"	, "eps"	, "*F R", "/F R", "0"	, "eps"	, "eps"},
+	{"F", "0"	, "id"	, "0"	, "0"	, "0"	, "0"	, "0"	, "(E)"	, "0"	, "0"},
 };
 
 int main()
 {
 	ifstream inFile;
 	int input;
-	string currInput = "";
 	string fileInput = "";
 	vector<Tokens> tokens;
 	vector<Tokens> idTerm;
@@ -162,6 +163,7 @@ int main()
 			{
 				currInput = "id";
 			}
+
 			cout << "TOP: " << top << endl;
 			cout << "INPUT: " << currInput << endl;
 
@@ -169,15 +171,13 @@ int main()
 			{
 				if (top == currInput)
 				{
-					//oFile << "Token: " << tokens[inputCount].tokenName << " \t" << "Lexeme: " << tokens[inputCount].lexemeValue;
-					//oFile << ruleOutputForTable(tokens[inputCount].lexemeValue) << endl;
-
 					parseStack.pop();
 					inputCount++;
 				}
 				else
 				{
-					cout << "Error, terminal not found" << endl;
+					cout << "Error, terminal not found." << endl;
+					stringAccepted = false;
 				}
 			}
 			else
@@ -185,11 +185,14 @@ int main()
 				// remove starting symbol
 				if (top == "S")
 				{
+					printProd(top);
 					parseStack.pop();
 					parseStack.push("A");
 				}else
 				if (top == "eps")
 				{
+
+					printProd(top);
 					parseStack.pop();
 				}
 				else
@@ -214,6 +217,7 @@ int main()
 											{
 												//  tableEntry = Table Lexeme Value 
 												tableEntry = lexer(parseTable[r][c]);
+												printProd(top);
 												parseStack.pop();
 												for (int k = (tableEntry.size() - 1); k >= 0; k--)
 												{
@@ -225,6 +229,7 @@ int main()
 											else
 											{
 												cout << "Error, table spot is 0" << endl;
+												stringAccepted = false;
 											}
 										}
 									}
@@ -233,22 +238,26 @@ int main()
 								{
 									if (top == "E")
 									{
+										printProd(top);
 										parseStack.pop();
 										parseStack.push("Q");
 										parseStack.push("T");
 									}
 									else if (top == "Q")
 									{
+										printProd(top);
 										parseStack.pop();
 									}
 									else if (top == "T")
 									{
+										printProd(top);
 										parseStack.pop();
 										parseStack.push("R");
 										parseStack.push("F");
 									}
 									else if (top == "R")
 									{
+										printProd(top);
 										parseStack.pop();
 									}
 									break;
@@ -260,11 +269,118 @@ int main()
 			}
 
 		}
+	} // End While-Loop
+
+	for (int i = 0; i < tokens.size(); i++)
+	{
+		oFile << "Token: " << tokens[i].tokenName << " \t" << "Lexeme: " << tokens[i].lexemeValue;
+		oFile << printRules[i] << endl;
+		if (tokens.size() == i + 1)
+		{
+			oFile << "Token: END \tLexeme: $";
+			while (!printRules[i].empty())
+			{
+				i++;
+				oFile << printRules[i];
+			}
+		}
 	}
+	if (stringAccepted == true)
+	{
+		oFile << "\nString accepted.";
+	}
+	else
+	{
+		oFile << "\nString not accepted.";
+	}
+
 	oFile.close();
 	inFile.close();
 	return 0;
 }
+
+// ============================================================================
+//  Production Printer
+// ============================================================================
+//S->A
+//A->id=E;
+//E->TQ
+//Q->+TQ|-TQ|epsilon
+//T->FR
+//R->*FR|/FR|epsilon
+//F->id|(E)
+//currInput = "";
+
+void printProd(string top)
+{
+	cout << "<- - ->" << endl;
+	if (top == "S")
+	{
+		printRules[inputCount] += ("\n\t<Statement> -> <Assign>");
+	}
+	else if (top == "A")
+	{
+		printRules[inputCount] += ("\n\t<Assign> -> <Identifier> = <Expression> ;");
+	}
+	else if (top == "E")
+	{
+		printRules[inputCount] += ("\n\t<Expression> -> <Term> <Expression Prime>");
+	}
+	else if (top == "Q")
+	{
+		if (currInput == "+")
+		{
+			printRules[inputCount] += ("\n\t<Expression Prime> -> + <Term> <Expression Prime>");
+		}
+		else if (currInput == "-")
+		{
+			printRules[inputCount] += ("\n\t<Expression Prime> -> - <Term> <Expression Prime>");
+		}
+		else if (currInput != "+" && currInput != "-")
+		{
+			printRules[inputCount] += ("\n\t<Expression Prime> -> <Epsilon>");
+		}
+	}
+	else if (top == "T")
+	{
+		printRules[inputCount] += ("\n\t<Term> -> <Factor> <Term Prime>");
+	}
+	else if (top == "R")
+	{
+		if (currInput == "*")
+		{
+			printRules[inputCount] += ("\n\t<Term Prime> -> * <Factor> <Term Prime>");
+		}
+		else if (currInput == "/")
+		{
+			printRules[inputCount] += ("\n\t<Term Prime> -> / <Factor> <Term Prime>");
+		}
+		else
+		{
+			printRules[inputCount] += ("\n\t<Term Prime> -> <Epsilon>");
+		}
+	}
+	else if (top == "F")
+	{
+		if (currInput == "id")
+		{
+			printRules[inputCount] += ("\n\t<Factor> -> <Identifier>");
+		}
+		else if (currInput == "(")
+		{
+			printRules[inputCount] += ("\n\t<Factor> -> ( <Expression> )");
+		}
+	}
+}
+//S->A
+//A->id=E;
+//E->TQ
+//Q->+TQ|-TQ|epsilon
+//T->FR
+//R->*FR|/FR|epsilon
+//F->id|(E)
+//currInput = "";
+
 
 // ============================================================================
 //  Vector lexer
