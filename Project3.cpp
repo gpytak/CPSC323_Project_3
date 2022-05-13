@@ -4,6 +4,7 @@
 // Class: CPSC 323
 // Project: Project 3
 // ============================================================================
+#include "pch.h"
 #include <iostream>
 #include <vector>
 #include <string>
@@ -13,19 +14,12 @@
 
 using namespace std;
 
-bool stringAccepted = true;
-bool error = false;
-int errorIndex;
-int tokenIndex = 0;
 bool isComment = false;
-vector<string> fileInputTP;
-vector<string> tableEntry;
-string s[30];
-string currentRule;
-string ruleList[30];
+bool PUSH = false;
+int inputCount = 0;
+string input, top, printRules[60];
 ofstream oFile;
 
-// These are the inputs for the FSM.
 enum TransitionStates {
 	// REJECT is the starting state and final state.
 	REJECT = 0,
@@ -71,6 +65,7 @@ int table[9][9] =
 /* STATE 7 */ {COMMENT,  COMMENT     ,   COMMENT    ,   COMMENT    ,   COMMENT    ,  COMMENT    ,   COMMENT    ,  REJECT ,  COMMENT  },
 /* STATE 8 */ {UNKNOWN,   UNKNOWN    ,   UNKNOWN    ,   UNKNOWN    ,   UNKNOWN    ,  UNKNOWN    ,   UNKNOWN    ,  UNKNOWN,  UNKNOWN  } };
 
+
 /*ParseTable*/
 //S->A
 //A->id=E
@@ -84,24 +79,26 @@ const int parseTableColumnCount = 11;
 string parseTable[parseTableRowCount][parseTableColumnCount] = {
 	{"0", "$"	, "id"	, "="	, "+"	, "-"	, "*"	, "/"	, "("	, ")"	, ";"},
 	{"A", "0"	, "id=E", "id=E", "0"	, "0"	, "0"	, "0"	, "E"	, "0"	, "0"},
-	{"E", "0"	, "TQ"	, "0"	, "0"	, "0"	, "0"	, "0"	, "TQ"	, "0"	, "0"},
-	{"Q", "eps"	, "0"	, "0"	, "+TQ"	, "-TQ"	, "0"	, "0"	, "0"	, "eps"	, "0"},
-	{"T", "0"	, "FR"	, "0"	, "0"	, "0"	, "0"	, "0"	, "FR"	, "0"	, "0"},
-	{"R", "eps"	, "0"	, "0"	, "0"	, "0"	, "*FR"	, "/FR"	, "0"	, "eps"	, "0"},
+	{"E", "0"	, "T Q"	, "0"	, "0"	, "0"	, "0"	, "0"	, "T Q"	, "0"	, "0"},
+	{"Q", "eps"	, "0"	, "0"	, "+T Q"	, "-T Q"	, "0"	, "0"	, "0"	, "eps"	, "0"},
+	{"T", "0"	, "F R"	, "0"	, "0"	, "0"	, "0"	, "0"	, "F R"	, "0"	, "0"},
+	{"R", "eps"	, "0"	, "0"	, "0"	, "0"	, "*F R"	, "/F R"	, "0"	, "eps"	, "0"},
 	{"F", "0"	, "id"	, "0"	, "0"	, "0"	, "0"	, "0"	, "(E)"	, "0"	, "0"},
 };
 
-
-// ============================================================================
-//  MAIN
-// ============================================================================
 int main()
 {
 	ifstream inFile;
 	int input;
+	string currInput = "";
 	string fileInput = "";
 	vector<Tokens> tokens;
-
+	vector<Tokens> idTerm;
+	vector<Tokens> tableEntry;
+	vector<string> fileInputTP;
+	stack<string> parseStack;
+	parseStack.push("$");
+	parseStack.push("S");
 
 	cout << "Please choose which input file to analyze:" << endl;
 	cout << "1: Input File 1" << endl;
@@ -143,37 +140,42 @@ int main()
 		return 0;
 	}
 
-	// Output to file
 	while (getline(inFile, fileInput))
 	{
-		//Table Parse: add "$" to end of input string
-		fileInputTP.push_back(fileInput + "$");
-		int inputCount = 0;
-		//bool entryFound = false;
-		//Table Parse
-		stack<string> parseStack;
-		parseStack.push("$");
-		parseStack.push("S");
+		tokens = lexer(fileInput);
 
-		while (!parseStack.empty() || parseStack.top() != "$")
+		// Setting fileInputTP with fileInput and $
+		for (int i = 0; i < tokens.size(); i++)
 		{
-			string t = parseStack.top();
-			string input = fileInputTP[inputCount];
+			fileInputTP.push_back(tokens[i].lexemeValue);
+		}
+		fileInputTP.push_back("$");
 
-			//top of stack is terminal
-			/* t >= "a" && t <= "z" is t == "id"*/
-			if (t == "$" || t == "id" || t == "=" || t == "+" || t == "-" || t == "*" || t == "/" || t == "(" || t == ")" || t == ";")
+		// Parser
+		while (parseStack.top() != "$")
+		{
+			// top = Top Production Symbol | currInput = Top Input String | idTerm = currInput Token Name
+			PUSH = false;
+			top = parseStack.top();
+			currInput = fileInputTP[inputCount];
+			idTerm = lexer(currInput);
+			if (idTerm[0].tokenName == "IDENTIFIER")
 			{
-				//terminal matches input
-				if (t == input)
+				currInput = "id";
+			}
+
+			cout << "TOP: " << top << endl;
+			cout << "INPUT: " << currInput << endl;
+			//cout << "idTerm: " << idTerm[0].tokenName << endl;
+
+			if (top == "$" || top == "id" || top == "=" || top == "+" || top == "-" || top == "*" || top == "/" || top == "(" || top == ")" || top == ";")
+			{
+				if (top == currInput)
 				{
+					//oFile << "Token: " << tokens[inputCount].tokenName << " \t" << "Lexeme: " << tokens[inputCount].lexemeValue;
+					//oFile << ruleOutputForTable(tokens[inputCount].lexemeValue) << endl;
+
 					parseStack.pop();
-					tokens = lexer(input);
-
-					//print
-					oFile << "Token: " << tokens[inputCount].tokenName << " \t" << "Lexeme: " << tokens[inputCount].lexemeValue;
-					oFile << ruleOutputForTable(tokens[inputCount].lexemeValue) << endl; //unknown, needs defining
-
 					inputCount++;
 				}
 				else
@@ -181,78 +183,83 @@ int main()
 					cout << "Error, terminal not found" << endl;
 				}
 			}
-			//top of stack is non-terminal
 			else
 			{
-				//non-terminal (row) match
-				for (int r = 0; r < parseTableRowCount; r++)
+				// remove starting symbol
+				if (top == "S")
 				{
-					if (parseTable[r][0] == t)
+					parseStack.pop();
+					parseStack.push("A");
+				}
+				else
+				{
+					//non-terminal (row) match
+					for (int r = 0; r < parseTableRowCount; r++)
 					{
-						//input terminal (column) match
-						for (int c = 0; c < parseTableColumnCount; c++)
+						if (parseTable[r][0] == top)
 						{
-							if (parseTable[0][c] == input)
+							//input terminal (column) match
+							for (int c = 0; c < parseTableColumnCount; c++)
 							{
-								//check if valid table entry
 								if (parseTable[r][c] != "0")
 								{
-									parseStack.pop();
-									tableEntry.push_back(parseTable[r][c]);
-									for (int k = tableEntry.size(); k > 0; k--)
+									tableEntry = lexer(parseTable[0][c]);
+									for (int i = 0; i < tableEntry.size(); i++)
 									{
-										if (!tableEntry[k].empty())
+										//cout << "." << parseTable[r][c] << endl;
+										if (tableEntry[i].lexemeValue == currInput)
 										{
-											parseStack.push(tableEntry[k]);
+											//check if valid table entry
+											if (parseTable[r][c] != "0")
+											{
+												//  tableEntry = Table Lexeme Value 
+												tableEntry = lexer(parseTable[r][c]);
+												parseStack.pop();
+												for (int k = (tableEntry.size() - 1); k >= 0; k--)
+												{
+													parseStack.push(tableEntry[k].lexemeValue);
+												}
+												PUSH = true;
+												break;
+											}
+											else
+											{
+												cout << "Error, table spot is 0" << endl;
+											}
 										}
 									}
 								}
-								else
+								if (!PUSH && c == (parseTableColumnCount - 1))
 								{
-									cout << "Error, table spot is 0" << endl;
+									if (top == "E")
+									{
+										parseStack.pop();
+										parseStack.push("Q");
+										parseStack.push("T");
+									}
+									else if (top == "Q")
+									{
+										parseStack.pop();
+									}
+									else if (top == "T")
+									{
+										parseStack.pop();
+										parseStack.push("R");
+										parseStack.push("F");
+									}
+									else if (top == "R")
+									{
+										parseStack.pop();
+									}
+									break;
 								}
 							}
 						}
 					}
 				}
 			}
-		}
 
-		// Lexical Analyzer
-		tokens = lexer(fileInput);
-
-		// Token Parser
-		const int tokenLength = (tokens.size());
-		for (int i = 0; i < tokens.size(); i++)
-		{
-			// Print Lexeme and Token
-			oFile << "Token: " << tokens[i].tokenName << " \t" << "Lexeme: " << tokens[i].lexemeValue;
-			// Print used production rules
-			oFile << ruleList[i] << endl;
-			if (tokenLength == i + 1)
-			{
-				oFile << "Token: END \tLexeme: $";
-				while (!ruleList[i].empty())
-				{
-					// Print unused production rules
-					i++;
-					oFile << ruleList[i];
-				}
-			}
-			if (errorIndex == i && error == true)
-			{
-				break;
-			}
 		}
-		if (stringAccepted == true)
-		{
-			oFile << "\nString accepted.";
-		}
-		else
-		{
-			oFile << "\nString not accepted.";
-		}
-
 	}
 	oFile.close();
 	inFile.close();
