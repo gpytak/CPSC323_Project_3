@@ -1,7 +1,7 @@
-Token: IDENTIFIER 	Lexeme: x
+Token: IDENTIFIER 	Lexeme: result
 	<Statement> -> <Assign>
+	<Assign> -> <Identifier> = <Expression> ;
 Token: OPERATOR 	Lexeme: =
-	<Assign> -> <Identifier> = <Expression>
 Token: SEPARATOR 	Lexeme: (
 	<Expression> -> <Term> <Expression Prime>
 	<Term> -> <Factor> <Term Prime>
@@ -29,12 +29,18 @@ Token: IDENTIFIER 	Lexeme: a
 Token: OPERATOR 	Lexeme: +
 	<Term Prime> -> <Epsilon>
 	<Expression Prime> -> + <Term> <Expression Prime>
-Token: IDENTIFIER 	Lexeme: a
+Token: IDENTIFIER 	Lexeme: b
 	<Term> -> <Factor> <Term Prime>
 	<Factor> -> <Identifier>
 Token: OPERATOR 	Lexeme: -
 	<Term Prime> -> <Epsilon>
 	<Expression Prime> -> - <Term> <Expression Prime>
+Token: IDENTIFIER 	Lexeme: b
+	<Term> -> <Factor> <Term Prime>
+	<Factor> -> <Identifier>
+Token: OPERATOR 	Lexeme: +
+	<Term Prime> -> <Epsilon>
+	<Expression Prime> -> + <Term> <Expression Prime>
 Token: IDENTIFIER 	Lexeme: b
 	<Term> -> <Factor> <Term Prime>
 	<Factor> -> <Identifier>
@@ -53,13 +59,15 @@ Token: OPERATOR 	Lexeme: /
 	<Term Prime> -> / <Factor> <Term Prime>
 Token: IDENTIFIER 	Lexeme: d
 	<Factor> -> <Identifier>
-Token: OPERATOR 	Lexeme: *
-	<Term Prime> -> * <Factor> <Term Prime>
-Token: IDENTIFIER 	Lexeme: d
-	<Factor> -> <Identifier>
 Token: OPERATOR 	Lexeme: +
 	<Term Prime> -> <Epsilon>
 	<Expression Prime> -> + <Term> <Expression Prime>
+Token: IDENTIFIER 	Lexeme: d
+	<Term> -> <Factor> <Term Prime>
+	<Factor> -> <Identifier>
+Token: OPERATOR 	Lexeme: -
+	<Term Prime> -> <Epsilon>
+	<Expression Prime> -> - <Term> <Expression Prime>
 Token: IDENTIFIER 	Lexeme: d
 	<Term> -> <Factor> <Term Prime>
 	<Factor> -> <Identifier>
