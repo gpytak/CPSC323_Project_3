@@ -1,19 +1,6 @@
-Token: IDENTIFIER 	Lexeme: penguin
+Token: IDENTIFIER 	Lexeme: upper
 	<Statement> -> <Assign>
-Token: OPERATOR 	Lexeme: =
-	<Assign> -> <Identifier> = <Expression>
-Token: IDENTIFIER 	Lexeme: happy
-	<Expression> -> <Term> <Expression Prime>
-	<Term> -> <Factor> <Term Prime>
-	<Factor> -> <Identifier>
-Token: OPERATOR 	Lexeme: +
-	<Term Prime> -> <Epsilon>
-	<Expression Prime> -> + <Term> <Expression Prime>
-Token: IDENTIFIER 	Lexeme: feet
-	<Term> -> <Factor> <Term Prime>
-	<Factor> -> <Identifier>
-Token: SEPARATOR 	Lexeme: ;
-	<Term Prime> -> <Epsilon>
-	<Expression Prime> -> <Epsilon>
-Token: END 	Lexeme: $
-String accepted.
+	<Assign> -> <Identifier> = <Expression> ;
+Token: SEPARATOR 	Lexeme: )
+
+String not accepted.
