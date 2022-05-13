@@ -164,8 +164,8 @@ int main()
 				currInput = "id";
 			}
 
-			cout << "TOP: " << top << endl;
-			cout << "INPUT: " << currInput << endl;
+			//cout << "TOP: " << top << endl;
+			//cout << "INPUT: " << currInput << endl;
 
 			if (top == "$" || top == "id" || top == "=" || top == "+" || top == "-" || top == "*" || top == "/" || top == "(" || top == ")" || top == ";")
 			{
