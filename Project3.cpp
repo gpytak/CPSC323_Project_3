@@ -75,11 +75,12 @@ int table[9][9] =
 //T->FR
 //R->*FR|/FR|epsilon
 //F->id|(E)
-const int parseTableRowCount = 7;
+const int parseTableRowCount = 8;
 const int parseTableColumnCount = 11;
 string parseTable[parseTableRowCount][parseTableColumnCount] = {
 	{"0", "$"	, "id"	, "="	, "+"	, "-"	, "*"	, "/"	, "("	, ")"	, ";"},
-	{"A", "0"	, "id=E;", "0"	, "0"	, "0"	, "0"	, "0"	, "0"	, "0"	, "0"},
+	{"S", "0"	, "A",    "0"	, "0"	, "0"	, "0"	, "0"	, "0"	, "0"	, "0"},
+	{"A", "0"	, "id=E;","0"	, "0"	, "0"	, "0"	, "0"	, "0"	, "0"	, "0"},
 	{"E", "0"	, "T Q"	, "0"	, "0"	, "0"	, "0"	, "0"	, "T Q"	, "0"	, "0"},
 	{"Q", "eps"	, "0"	, "0"	, "+T Q", "-T Q", "0"	, "0"	, "0"	, "eps"	, "eps"},
 	{"T", "0"	, "F R"	, "0"	, "0"	, "0"	, "0"	, "0"	, "F R"	, "0"	, "0"},
@@ -184,13 +185,7 @@ int main()
 			}
 			else
 			{
-				// remove starting symbol
-				if (top == "S")
-				{
-					printProd(top);
-					parseStack.pop();
-					parseStack.push("A");
-				}else
+				// remove epsilon symbol
 				if (top == "eps")
 				{
 					printProd(top);
@@ -237,6 +232,12 @@ int main()
 								}
 								if (!PUSH && c == (parseTableColumnCount - 1))
 								{
+									if (top == "S")
+									{
+										printProd(top);
+										parseStack.pop();
+										parseStack.push("A");
+									}
 									if (top == "E")
 									{
 										printProd(top);
