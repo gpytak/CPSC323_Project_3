@@ -77,7 +77,7 @@ const int parseTableRowCount = 7;
 const int parseTableColumnCount = 11;
 string parseTable[parseTableRowCount][parseTableColumnCount] = {
 	{"0", "$"	, "id"	 , "="	  , "+"		, "-"	, "*"		, "/"		, "("	, ")"	, ";"},
-	{"A", "0"	, "id=E;", "id=E;", "0"		, "0"	, "0"		, "0"		, "E"	, "0"	, "id=E;"},
+	{"A", "0"	, "id=E;", "id=E;", "0"		, "0"	, "0"		, "0"		, "E"	, "0"	, "0"},
 	{"E", "0"	, "T Q"	 , "0"	  , "0"		, "0"	, "0"		, "0"		, "T Q"	, "0"	, "0"},
 	{"Q", "eps"	, "0"	 , "0"	  , "+T Q"	, "-T Q", "0"		, "0"		, "0"	, "eps"	, "id=E;"},
 	{"T", "0"	, "F R"	 , "0"	  , "0"		, "0"	, "0"		, "0"		, "F R"	, "0"	, "0;"},
