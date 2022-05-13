@@ -4,7 +4,6 @@
 // Class: CPSC 323
 // Project: Project 3
 // ============================================================================
-#include "pch.h"
 #include <iostream>
 #include <vector>
 #include <string>
@@ -163,10 +162,8 @@ int main()
 			{
 				currInput = "id";
 			}
-
 			cout << "TOP: " << top << endl;
 			cout << "INPUT: " << currInput << endl;
-			//cout << "idTerm: " << idTerm[0].tokenName << endl;
 
 			if (top == "$" || top == "id" || top == "=" || top == "+" || top == "-" || top == "*" || top == "/" || top == "(" || top == ")" || top == ";")
 			{
@@ -190,6 +187,10 @@ int main()
 				{
 					parseStack.pop();
 					parseStack.push("A");
+				}else
+				if (top == "eps")
+				{
+					parseStack.pop();
 				}
 				else
 				{
@@ -206,7 +207,6 @@ int main()
 									tableEntry = lexer(parseTable[0][c]);
 									for (int i = 0; i < tableEntry.size(); i++)
 									{
-										//cout << "." << parseTable[r][c] << endl;
 										if (tableEntry[i].lexemeValue == currInput)
 										{
 											//check if valid table entry
