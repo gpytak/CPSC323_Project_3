@@ -90,7 +90,7 @@ string parseTable[parseTableRowCount][parseTableColumnCount] = {
 int main()
 {
 	ifstream inFile;
-	int input;
+	int input, errorIndex;
 	string fileInput = "";
 	vector<Tokens> tokens;
 	vector<Tokens> idTerm;
@@ -178,6 +178,8 @@ int main()
 				{
 					cout << "Error, terminal not found." << endl;
 					stringAccepted = false;
+					errorIndex = inputCount;
+					break;
 				}
 			}
 			else
@@ -191,7 +193,6 @@ int main()
 				}else
 				if (top == "eps")
 				{
-
 					printProd(top);
 					parseStack.pop();
 				}
@@ -284,6 +285,8 @@ int main()
 				oFile << printRules[i];
 			}
 		}
+		if (!stringAccepted && i == errorIndex)
+			break;
 	}
 	if (stringAccepted == true)
 	{
@@ -302,18 +305,8 @@ int main()
 // ============================================================================
 //  Production Printer
 // ============================================================================
-//S->A
-//A->id=E;
-//E->TQ
-//Q->+TQ|-TQ|epsilon
-//T->FR
-//R->*FR|/FR|epsilon
-//F->id|(E)
-//currInput = "";
-
 void printProd(string top)
 {
-	cout << "<- - ->" << endl;
 	if (top == "S")
 	{
 		printRules[inputCount] += ("\n\t<Statement> -> <Assign>");
@@ -372,15 +365,6 @@ void printProd(string top)
 		}
 	}
 }
-//S->A
-//A->id=E;
-//E->TQ
-//Q->+TQ|-TQ|epsilon
-//T->FR
-//R->*FR|/FR|epsilon
-//F->id|(E)
-//currInput = "";
-
 
 // ============================================================================
 //  Vector lexer
